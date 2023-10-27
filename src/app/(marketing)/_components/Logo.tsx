@@ -10,7 +10,20 @@ const poppins = Poppins({
 export default function Logo() {
   return (
     <div className='hidden md:flex items-center gap-x-2'>
-      <Image src='/logo.svg' height='40' width='40' alt='logo' />
+      <Image
+        src='/logo.svg'
+        height='40'
+        width='40'
+        alt='logo'
+        className='dark:hidden'
+      />
+      <Image
+        src='/logo-dark.svg'
+        height='40'
+        width='40'
+        alt='logo'
+        className='hidden dark:block'
+      />
       <p className={cn('font-semibold', poppins.className)}>Jotion</p>
     </div>
   );
