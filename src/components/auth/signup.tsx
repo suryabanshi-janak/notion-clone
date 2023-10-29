@@ -2,6 +2,7 @@
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import axios from 'axios';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -21,8 +22,16 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { SignupFormData, SignupValidator } from '@/lib/validators/auth';
+import { useMutation } from '@tanstack/react-query';
+import { Loader2 } from 'lucide-react';
 
 export function Signup() {
+  const { mutate, isPending } = useMutation({
+    mutationFn: async (data: SignupFormData) => {
+      await axios.post('/api/signup', data);
+    },
+  });
+
   const form = useForm<SignupFormData>({
     resolver: zodResolver(SignupValidator),
     defaultValues: {
@@ -32,7 +41,7 @@ export function Signup() {
     },
   });
 
-  const onSubmit = (data: SignupFormData) => {};
+  const onSubmit = (data: SignupFormData) => mutate(data);
 
   return (
     <DialogContent className='sm:max-w-md'>
@@ -81,7 +90,10 @@ export function Signup() {
               </FormItem>
             )}
           />
-          <Button type='submit'>Continue</Button>
+          <Button type='submit' disabled={isPending}>
+            {isPending && <Loader2 className='w-4 h-4 animate-spin mr-2' />}
+            Continue
+          </Button>
         </form>
       </Form>
       <DialogFooter className='sm:justify-start text-sm'>
