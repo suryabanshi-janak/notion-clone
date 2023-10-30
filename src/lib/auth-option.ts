@@ -1,6 +1,8 @@
-import { PrismaAdapter } from '@next-auth/prisma-adapter';
-import { NextAuthOptions, getServerSession } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
+import { NextAuthOptions, getServerSession } from 'next-auth';
+import { PrismaAdapter } from '@next-auth/prisma-adapter';
+import { compare } from 'bcrypt';
+
 import { db } from './db';
 
 export const authOptions: NextAuthOptions = {
@@ -9,27 +11,45 @@ export const authOptions: NextAuthOptions = {
     strategy: 'jwt',
   },
   secret: process.env.NEXTAUTH_SECRET,
+  // pages: {
+  //   signIn: '/signin',
+  // },
   providers: [
     Credentials({
       name: 'credentials',
       credentials: {
-        email: { label: 'Email', placeholder: 'Email', type: 'email' },
+        email: { label: 'Email', type: 'text' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials, req) {
-        const user = { id: '1', name: 'J Smith', email: 'jsmith@example.com' };
-
-        if (user) {
-          return user;
-        } else {
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
           return null;
         }
+
+        const user = await db.user.findFirst({
+          where: {
+            email: credentials.email,
+          },
+        });
+
+        if (!user) return null;
+
+        const matchPassword = await compare(
+          credentials.password,
+          user.password
+        );
+
+        if (!matchPassword) return null;
+
+        return user;
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
-      if (!user) return token;
+      if (!user) {
+        return token;
+      }
 
       return {
         ...token,

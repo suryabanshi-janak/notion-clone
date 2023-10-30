@@ -1,7 +1,9 @@
 'use client';
 
+import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { signIn } from 'next-auth/react';
 import { SigninFormData, SigninValidator } from '@/lib/validators/auth';
 
 import { Button } from '@/components/ui/button';
@@ -21,8 +23,16 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
-export function Signin() {
+import { useToast } from '@/components/ui/use-toast';
+
+export function Signin({ toggleType }: { toggleType: () => void }) {
+  const router = useRouter();
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+
   const form = useForm<SigninFormData>({
     resolver: zodResolver(SigninValidator),
     defaultValues: {
@@ -31,7 +41,34 @@ export function Signin() {
     },
   });
 
-  const onSubmit = (data: SigninFormData) => {};
+  const onSubmit = async (data: SigninFormData) => {
+    try {
+      setIsLoading(true);
+      const res = await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
+
+      if (res?.error) {
+        return toast({
+          title: 'Invalid credentials',
+          description: 'Please enter valid email and password.',
+          variant: 'destructive',
+        });
+      }
+
+      router.push('/document');
+    } catch (error) {
+      toast({
+        title: 'Something went wrong',
+        description: 'Please try again later.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <DialogContent className='sm:max-w-md'>
@@ -67,12 +104,20 @@ export function Signin() {
               </FormItem>
             )}
           />
-          <Button type='submit'>Continue</Button>
+          <Button type='submit' disabled={isLoading}>
+            {isLoading && <Loader2 className='w-4 h-4 animate-spin mr-2' />}
+            Continue
+          </Button>
         </form>
       </Form>
       <DialogFooter className='sm:justify-start text-sm'>
         No account?{' '}
-        <Button variant='link' className='h-fit pl-2' size='sm'>
+        <Button
+          variant='link'
+          className='h-fit pl-2'
+          size='sm'
+          onClick={toggleType}
+        >
           Sign up
         </Button>
       </DialogFooter>
