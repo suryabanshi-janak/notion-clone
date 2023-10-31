@@ -41,7 +41,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ReactQueryProvider>
-            <main>{children}</main>
+            <main className='h-full'>{children}</main>
             <Toaster />
           </ReactQueryProvider>
         </ThemeProvider>

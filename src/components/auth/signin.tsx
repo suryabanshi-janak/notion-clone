@@ -58,7 +58,7 @@ export function Signin({ toggleType }: { toggleType: () => void }) {
         });
       }
 
-      router.push('/document');
+      router.push('/documents');
     } catch (error) {
       toast({
         title: 'Something went wrong',
