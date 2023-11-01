@@ -5,8 +5,10 @@ import { ChevronsLeft, MenuIcon } from 'lucide-react';
 import { useMediaQuery } from 'usehooks-ts';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import UserItem from './UserItem';
+import { SessionUser } from '@/types/auth';
 
-export default function SideNavigation() {
+export default function SideNavigation({ user }: { user: SessionUser }) {
   const pathname = usePathname();
 
   const isMobile = useMediaQuery('(max-width: 768px)');
@@ -107,14 +109,14 @@ export default function SideNavigation() {
           onClick={collapse}
           role='button'
           className={cn(
-            'h-6 w-6 text-muted-foreground absolute top-2 right-3 transition opacity-0 group-hover/sidebar:opacity-100 rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600',
+            'h-6 w-6 text-muted-foreground absolute top-3 right-3 transition opacity-0 group-hover/sidebar:opacity-100 rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600',
             isMobile && 'opacity-100'
           )}
         >
           <ChevronsLeft className='h-6 w-6' />
         </div>
         <div>
-          <p>Action items</p>
+          <UserItem user={user} />
         </div>
         <div className='mt-4'>
           <p>Documents</p>
