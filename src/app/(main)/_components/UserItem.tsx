@@ -1,5 +1,8 @@
 'use client';
 
+import { ChevronsLeftRight } from 'lucide-react';
+import { signOut } from 'next-auth/react';
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,9 +14,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { getInitials } from '@/lib/utils';
 import { SessionUser } from '@/types/auth';
-import { ChevronsLeftRight } from 'lucide-react';
 
 export default function UserItem({ user }: { user: SessionUser }) {
+  const onLogout = () => signOut();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -65,6 +69,7 @@ export default function UserItem({ user }: { user: SessionUser }) {
           <Button
             variant='ghost'
             className='focus-visible:ring-0 focus-visible:ring-offset-0'
+            onClick={onLogout}
           >
             Logout
           </Button>
