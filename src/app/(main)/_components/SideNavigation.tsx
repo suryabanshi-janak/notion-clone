@@ -1,12 +1,20 @@
 'use client';
 
 import * as React from 'react';
-import { ChevronsLeft, MenuIcon } from 'lucide-react';
+import {
+  ChevronsLeft,
+  MenuIcon,
+  PlusCircle,
+  Search,
+  Settings,
+} from 'lucide-react';
 import { useMediaQuery } from 'usehooks-ts';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import UserItem from './UserItem';
 import { SessionUser } from '@/types/auth';
+import NavItem from './NavItem';
+import DocumentList from './DocumentList';
 
 export default function SideNavigation({ user }: { user: SessionUser }) {
   const pathname = usePathname();
@@ -117,9 +125,12 @@ export default function SideNavigation({ user }: { user: SessionUser }) {
         </div>
         <div>
           <UserItem user={user} />
+          <NavItem label='Search' icon={Search} isSearch onClick={() => {}} />
+          <NavItem label='Settings' icon={Settings} onClick={() => {}} />
+          <NavItem icon={PlusCircle} label='New Page' onClick={() => {}} />
         </div>
         <div className='mt-4'>
-          <p>Documents</p>
+          <DocumentList />
         </div>
 
         <div

@@ -48,3 +48,26 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+export async function GET() {
+  try {
+    const session = await getAuthSession();
+
+    if (!session?.user) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const documents = await db.document.findMany({
+      where: {
+        userId: session.user.id,
+      },
+    });
+
+    return NextResponse.json({ documents }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: 'Something went wrong' },
+      { status: 500 }
+    );
+  }
+}
