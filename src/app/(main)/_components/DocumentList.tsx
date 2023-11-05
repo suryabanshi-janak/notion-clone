@@ -1,13 +1,14 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import axios from "axios";
-import { FileIcon } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import axios from 'axios';
+import { FileIcon } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
-import NavItem from "./NavItem";
-import { Document } from "@prisma/client";
+import NavItem from './NavItem';
+import { Document } from '@prisma/client';
+import { cn } from '@/lib/utils';
 
 interface DocumentListProps {
   parentDocumentId?: string;
@@ -25,12 +26,12 @@ export default function DocumentList({
 
   const { data: documents, isPending } = useQuery({
     queryFn: async () => {
-      const res = await axios.get<{ documents: Document[] }>("/api/document", {
+      const res = await axios.get<{ documents: Document[] }>('/api/document', {
         params: parentDocumentId,
       });
       return res;
     },
-    queryKey: ["documents"],
+    queryKey: ['documents'],
     select: ({ data }) => data?.documents,
   });
 
@@ -61,9 +62,22 @@ export default function DocumentList({
 
   return (
     <>
+      {/* <p
+        style={{
+          paddingLeft: level ? `${level * 12 + 25}px` : undefined,
+        }}
+        className={cn(
+          'hidden text-sm font-medium text-muted-foreground/80',
+          expanded && 'last:block',
+          level === 0 && 'hidden'
+        )}
+      >
+        No pages inside
+      </p> */}
       {documents?.map((document) => (
         <div key={document.id}>
           <NavItem
+            id={document.id}
             icon={FileIcon}
             label={document.title}
             onClick={() => onRedirect(document.id)}
