@@ -1,6 +1,9 @@
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/components/ui/use-toast';
 import { cn } from '@/lib/utils';
-import { ChevronDown, ChevronRight, LucideIcon } from 'lucide-react';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
+import { ChevronDown, ChevronRight, LucideIcon, Plus } from 'lucide-react';
 
 interface NavItemProps {
   id?: string;
@@ -27,11 +30,40 @@ export default function NavItem({
   onExpand,
   expanded,
 }: NavItemProps) {
+  const { toast } = useToast();
+
   const handleExpand = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
     event.stopPropagation();
     onExpand?.();
+  };
+
+  const { mutate: create, isPending } = useMutation({
+    mutationFn: async () => {
+      return await axios.post('/api/document', {
+        title: 'Untitled',
+        parentDocument: id,
+      });
+    },
+    onError: () => {
+      toast({
+        title: 'Something went wrong!',
+        description: 'There was an error creating the document.',
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: 'New note created!',
+        description: 'Successfully created a new note.',
+      });
+      onExpand?.();
+    },
+  });
+
+  const onCreate = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    event.stopPropagation();
+    create();
   };
 
   const ChevronIcon = expanded ? ChevronDown : ChevronRight;
@@ -65,6 +97,15 @@ export default function NavItem({
         <kbd className='ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100'>
           <span className='text-xs'>⌘</span>K
         </kbd>
+      )}
+      {!!id && (
+        <div
+          role='button'
+          onClick={onCreate}
+          className='opacity-0 group-hover:opacity-100 h-full ml-auto rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600'
+        >
+          <Plus className='h-4 w-4 text-muted-foreground' />
+        </div>
       )}
     </div>
   );

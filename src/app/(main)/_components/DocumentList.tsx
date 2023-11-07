@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import { FileIcon } from 'lucide-react';
@@ -26,9 +26,7 @@ export default function DocumentList({
 
   const { data: documents, isPending } = useQuery({
     queryFn: async () => {
-      const res = await axios.get<{ documents: Document[] }>('/api/document', {
-        params: parentDocumentId,
-      });
+      const res = await axios.get<{ documents: Document[] }>('/api/documents');
       return res;
     },
     queryKey: ['documents'],
@@ -62,7 +60,7 @@ export default function DocumentList({
 
   return (
     <>
-      {/* <p
+      <p
         style={{
           paddingLeft: level ? `${level * 12 + 25}px` : undefined,
         }}
@@ -73,7 +71,7 @@ export default function DocumentList({
         )}
       >
         No pages inside
-      </p> */}
+      </p>
       {documents?.map((document) => (
         <div key={document.id}>
           <NavItem

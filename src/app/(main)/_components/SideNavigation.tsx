@@ -9,15 +9,17 @@ import {
   Settings,
 } from 'lucide-react';
 import { useMediaQuery } from 'usehooks-ts';
-import { usePathname } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import UserItem from './UserItem';
 import { SessionUser } from '@/types/auth';
 import NavItem from './NavItem';
 import DocumentList from './DocumentList';
+import Navbar from './Navbar';
 
 export default function SideNavigation({ user }: { user: SessionUser }) {
   const pathname = usePathname();
+  const params = useParams();
 
   const isMobile = useMediaQuery('(max-width: 768px)');
 
@@ -147,15 +149,19 @@ export default function SideNavigation({ user }: { user: SessionUser }) {
           isMobile && 'left-0 w-full'
         )}
       >
-        <nav className='bg-transparent px-3 py-2 w-full'>
-          {isCollapsed && (
-            <MenuIcon
-              role='button'
-              onClick={resetWidth}
-              className='w-6 h-6 text-muted-foreground'
-            />
-          )}
-        </nav>
+        {!!params.documentId ? (
+          <Navbar onResetWidth={resetWidth} isCollapsed={isCollapsed} />
+        ) : (
+          <nav className='bg-transparent px-3 py-2 w-full'>
+            {isCollapsed && (
+              <MenuIcon
+                role='button'
+                onClick={resetWidth}
+                className='w-6 h-6 text-muted-foreground'
+              />
+            )}
+          </nav>
+        )}
       </div>
     </>
   );

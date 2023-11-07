@@ -57,23 +57,73 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const searchParams = req.nextUrl.searchParams;
-    const parentDocument = searchParams.get('parentDocumentId');
+    const { searchParams } = new URL(req.url);
+    const documentId = searchParams.get('documentId');
 
-    let query: {
-      userId: string;
-      isArchived: boolean;
-      parentDocument?: string;
-    } = {
-      userId: session.user.id,
-      isArchived: false,
-    };
-    if (parentDocument) query.parentDocument = parentDocument;
+    if (documentId) {
+      const document = await db.document.findFirst({
+        where: {
+          id: documentId,
+        },
+      });
+
+      if (!document) {
+        return NextResponse.json(
+          { message: 'No document with the given document id found' },
+          { status: 400 }
+        );
+      }
+
+      return NextResponse.json({ document }, { status: 200 });
+    }
+
     const documents = await db.document.findMany({
-      where: query,
+      where: {
+        userId: session.user.id,
+        isArchived: false,
+      },
     });
 
     return NextResponse.json({ documents }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: 'Something went wrong' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const body = await req.json();
+
+    const session = await getAuthSession();
+
+    if (!session?.user) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { documentId, ...data } = body;
+
+    if (!documentId) {
+      return NextResponse.json(
+        { message: 'No document id provided' },
+        { status: 400 }
+      );
+    }
+
+    const document = await db.document.update({
+      where: {
+        id: documentId,
+        userId: session.user.id,
+      },
+      data,
+    });
+
+    return NextResponse.json(
+      { message: 'Document updated sucessfully!', document },
+      { status: 200 }
+    );
   } catch (error) {
     return NextResponse.json(
       { message: 'Something went wrong' },
