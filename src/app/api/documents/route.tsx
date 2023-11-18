@@ -131,3 +131,40 @@ export async function PATCH(req: NextRequest) {
     );
   }
 }
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const session = await getAuthSession();
+
+    if (!session?.user) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const documentId = searchParams.get('documentId');
+
+    if (!documentId) {
+      return NextResponse.json(
+        { message: 'No document id provided' },
+        { status: 400 }
+      );
+    }
+
+    await db.document.delete({
+      where: {
+        id: documentId,
+        userId: session.user.id,
+      },
+    });
+
+    return NextResponse.json(
+      { message: 'Document deleted sucessfully!' },
+      { status: 200 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { message: 'Something went wrong' },
+      { status: 500 }
+    );
+  }
+}
