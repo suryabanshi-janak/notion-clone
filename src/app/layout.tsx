@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import ReactQueryProvider from '@/components/providers/ReactQueryProvider';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
+import { EdgeStoreProvider } from '@/lib/edgestore';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -34,17 +35,19 @@ export default function RootLayout({
   return (
     <html lang='en' suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider
-          attribute='class'
-          defaultTheme='system'
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ReactQueryProvider>
-            <main className='h-full'>{children}</main>
-            <Toaster />
-          </ReactQueryProvider>
-        </ThemeProvider>
+        <EdgeStoreProvider>
+          <ThemeProvider
+            attribute='class'
+            defaultTheme='system'
+            enableSystem
+            disableTransitionOnChange
+          >
+            <ReactQueryProvider>
+              <main className='h-full'>{children}</main>
+              <Toaster />
+            </ReactQueryProvider>
+          </ThemeProvider>
+        </EdgeStoreProvider>
       </body>
     </html>
   );
