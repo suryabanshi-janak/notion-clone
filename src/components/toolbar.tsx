@@ -10,6 +10,7 @@ import IconPicker from '@/components/icon-picker';
 import { Button } from '@/components/ui/button';
 import { Document } from '@prisma/client';
 import { ImageIcon, Smile, X } from 'lucide-react';
+import { useCoverImage } from '@/hooks/use-cover-image';
 
 interface UpdateData {
   documentId: string;
@@ -26,6 +27,7 @@ export default function Toolbar({
 }) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { onOpen: onImageUpload } = useCoverImage();
 
   const inputRef = React.useRef<React.ElementRef<'textarea'>>(null);
   const [isEditing, setIsEditing] = React.useState<boolean>(false);
@@ -132,16 +134,15 @@ export default function Toolbar({
           </IconPicker>
         )}
         {!initialData?.coverImage && !preview && (
-          <IconPicker asChild onChange={onIconSelect}>
-            <Button
-              className='text-muted-foreground text-xs'
-              variant='outline'
-              size='sm'
-            >
-              <ImageIcon className='h-4 w-4 mr-2' />
-              Add cover
-            </Button>
-          </IconPicker>
+          <Button
+            className='text-muted-foreground text-xs'
+            variant='outline'
+            size='sm'
+            onClick={onImageUpload}
+          >
+            <ImageIcon className='h-4 w-4 mr-2' />
+            Add cover
+          </Button>
         )}
       </div>
       {isEditing && !preview ? (

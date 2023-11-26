@@ -5,6 +5,7 @@ import ReactQueryProvider from '@/components/providers/ReactQueryProvider';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { EdgeStoreProvider } from '@/lib/edgestore';
+import { ModalProvider } from '@/components/providers/ModalProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -45,6 +46,7 @@ export default function RootLayout({
             <ReactQueryProvider>
               <main className='h-full'>{children}</main>
               <Toaster />
+              <ModalProvider />
             </ReactQueryProvider>
           </ThemeProvider>
         </EdgeStoreProvider>
