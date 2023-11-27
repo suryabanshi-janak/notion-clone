@@ -1,5 +1,6 @@
 'use client';
 
+import { Cover } from '@/components/cover';
 import Toolbar from '@/components/toolbar';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
@@ -21,7 +22,7 @@ export default function DocumentIdPage({ params }: DocumentIdPageProps) {
 
   return (
     <div className='pb-40'>
-      <div className='min-h-[35vh]'></div>
+      <Cover url={document?.coverImage} />
       <div className='md:max-w-3xl lg:max-w-4xl mx-auto'>
         <Toolbar initialData={document} />
       </div>
