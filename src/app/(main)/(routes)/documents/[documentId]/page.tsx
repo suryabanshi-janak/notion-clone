@@ -6,11 +6,27 @@ import { useQuery } from '@tanstack/react-query';
 import { Cover } from '@/components/cover';
 import Toolbar from '@/components/toolbar';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useMemo } from 'react';
+import dynamic from 'next/dynamic';
+import useDocumentUpdate from '@/hooks/use-document-update';
 
 interface DocumentIdPageProps {
   params: { documentId: string };
 }
+
+interface UpdateData {
+  documentId: string;
+  content: string;
+}
+
 export default function DocumentIdPage({ params }: DocumentIdPageProps) {
+  const Editor = useMemo(
+    () => dynamic(() => import('@/components/editor'), { ssr: false }),
+    []
+  );
+
+  const { onUpdate } = useDocumentUpdate();
+
   const { data: document, isPending } = useQuery({
     queryFn: async () => {
       const res = await axios.get('/api/documents', {
@@ -21,6 +37,10 @@ export default function DocumentIdPage({ params }: DocumentIdPageProps) {
     queryKey: ['document'],
     select: ({ data }) => data.document,
   });
+
+  const onChange = (content: string) => {
+    onUpdate({ documentId: params.documentId, content });
+  };
 
   if (isPending) {
     return (
@@ -43,6 +63,7 @@ export default function DocumentIdPage({ params }: DocumentIdPageProps) {
       <Cover url={document?.coverImage} />
       <div className='md:max-w-3xl lg:max-w-4xl mx-auto'>
         <Toolbar initialData={document} />
+        <Editor onChange={onChange} initialContent={document.content} />
       </div>
     </div>
   );
