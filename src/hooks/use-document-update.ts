@@ -5,13 +5,14 @@ import axios from 'axios';
 export interface UpdateData {
   documentId: string;
   content?: string;
+  isPublished?: boolean;
 }
 
 export default function useDocumentUpdate() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const { mutate: onUpdate } = useMutation({
+  const { mutate: onUpdate, isPending } = useMutation({
     mutationFn: async (data: UpdateData) => {
       await axios.patch('/api/documents', data);
     },
@@ -28,5 +29,5 @@ export default function useDocumentUpdate() {
     },
   });
 
-  return { onUpdate };
+  return { onUpdate, isPending };
 }
