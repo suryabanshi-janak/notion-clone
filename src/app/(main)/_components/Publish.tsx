@@ -11,7 +11,6 @@ import {
 import useDocumentUpdate from '@/hooks/use-document-update';
 import { useOrigin } from '@/hooks/use-origin';
 import { Document } from '@prisma/client';
-import { useMutation } from '@tanstack/react-query';
 
 export default function Publish({ initialData }: { initialData: Document }) {
   const origin = useOrigin();

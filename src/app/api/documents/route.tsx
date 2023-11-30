@@ -53,10 +53,6 @@ export async function GET(req: NextRequest) {
   try {
     const session = await getAuthSession();
 
-    if (!session?.user) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-    }
-
     const { searchParams } = new URL(req.url);
     const documentId = searchParams.get('documentId');
 
@@ -75,6 +71,10 @@ export async function GET(req: NextRequest) {
       }
 
       return NextResponse.json({ document }, { status: 200 });
+    }
+
+    if (!session?.user) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
     const documents = await db.document.findMany({

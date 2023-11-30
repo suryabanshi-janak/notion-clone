@@ -8,7 +8,7 @@ export default async function layout({ children }: React.PropsWithChildren) {
   if (!session || !session.user) return redirect('/');
 
   return (
-    <div className='h-full flex dark:bg-[#1F1F1F]'>
+    <div className='h-full flex'>
       <SideNavigation user={session.user} />
       <main className='flex-1 h-full overflow-y-auto'>{children}</main>
     </div>
